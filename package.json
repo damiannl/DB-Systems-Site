@@ -9,6 +9,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase": "^10.6.0"
+    "firebase": "^10.8.0",
+    "firesql": "^2.0.2",
+    "rxfire": "^6.0.5",
+    "rxjs": "^7.8.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
