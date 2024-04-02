@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 02, 2024 at 10:40 AM
+-- Generation Time: Apr 02, 2024 at 10:54 AM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -46,6 +46,23 @@ INSERT INTO `admin` (`UID`, `Admins_ID`, `Admins_name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `comments`
+--
+
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE IF NOT EXISTS `comments` (
+  `Events_ID` int NOT NULL COMMENT 'Event that the comment is for',
+  `UID` int NOT NULL COMMENT 'User who posted the comment',
+  `text` text NOT NULL COMMENT 'Comment body',
+  `rating` int NOT NULL COMMENT 'rating, 0-5 stars',
+  `timestamp` timestamp NOT NULL COMMENT 'timestamp for when comment was posted/edited',
+  PRIMARY KEY (`Events_ID`,`UID`),
+  KEY `posted_by` (`UID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `events`
 --
 
@@ -80,22 +97,6 @@ CREATE TABLE IF NOT EXISTS `location` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `private_creates`
---
-
-DROP TABLE IF EXISTS `private_creates`;
-CREATE TABLE IF NOT EXISTS `private_creates` (
-  `Events_ID` int NOT NULL,
-  `Admins_ID` int NOT NULL,
-  `SuperAdmins_ID` int NOT NULL,
-  KEY `priv_admin_creates` (`Admins_ID`),
-  KEY `priv_sadmin_creates` (`SuperAdmins_ID`),
-  KEY `priv_makes_event` (`Events_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `private_events`
 --
 
@@ -107,23 +108,7 @@ CREATE TABLE IF NOT EXISTS `private_events` (
   PRIMARY KEY (`Events_ID`),
   UNIQUE KEY `Admins_ID_2` (`Admins_ID`,`SuperAdmins_ID`),
   KEY `Admins_ID` (`Admins_ID`,`SuperAdmins_ID`),
-  KEY `super_admin_creates` (`SuperAdmins_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `public_creates`
---
-
-DROP TABLE IF EXISTS `public_creates`;
-CREATE TABLE IF NOT EXISTS `public_creates` (
-  `Events_ID` int NOT NULL,
-  `Admins_ID` int NOT NULL,
-  `SuperAdmins_ID` int NOT NULL,
-  PRIMARY KEY (`Events_ID`,`Admins_ID`,`SuperAdmins_ID`),
-  KEY `pub_made_by_admin` (`Admins_ID`),
-  KEY `pub_made_by_sadmin` (`SuperAdmins_ID`)
+  KEY `priv_made_by_sadmin` (`SuperAdmins_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -139,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `public_events` (
   `SuperAdmins_ID` int NOT NULL,
   PRIMARY KEY (`Events_ID`),
   UNIQUE KEY `Admins_ID` (`Admins_ID`,`SuperAdmins_ID`),
-  KEY `sadmin_creates_pubE` (`SuperAdmins_ID`)
+  KEY `pub_made_by_sadmin` (`SuperAdmins_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -155,6 +140,20 @@ CREATE TABLE IF NOT EXISTS `rso` (
   `Admin_ID` int NOT NULL,
   PRIMARY KEY (`RSO_ID`),
   KEY `Admin_ID` (`Admin_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rso_events`
+--
+
+DROP TABLE IF EXISTS `rso_events`;
+CREATE TABLE IF NOT EXISTS `rso_events` (
+  `RSO_ID` int NOT NULL,
+  `Events_ID` int NOT NULL,
+  PRIMARY KEY (`Events_ID`),
+  KEY `RSO_ID` (`RSO_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -210,50 +209,46 @@ ALTER TABLE `admin`
   ADD CONSTRAINT `admin_isa_user` FOREIGN KEY (`UID`) REFERENCES `users` (`UID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
+-- Constraints for table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comment_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `posted_by` FOREIGN KEY (`UID`) REFERENCES `users` (`UID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `events`
 --
 ALTER TABLE `events`
-  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`Events_ID`) REFERENCES `private_events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `location`
---
-ALTER TABLE `location`
-  ADD CONSTRAINT `location_ibfk_1` FOREIGN KEY (`Lname`) REFERENCES `events` (`Lname`);
-
---
--- Constraints for table `private_creates`
---
-ALTER TABLE `private_creates`
-  ADD CONSTRAINT `priv_admin_creates` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `priv_makes_event` FOREIGN KEY (`Events_ID`) REFERENCES `private_events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `priv_sadmin_creates` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `has_location` FOREIGN KEY (`Lname`) REFERENCES `location` (`Lname`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `private_events`
 --
 ALTER TABLE `private_events`
-  ADD CONSTRAINT `priv_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `public_creates`
---
-ALTER TABLE `public_creates`
-  ADD CONSTRAINT `pub_made_by_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `pub_made_by_sadmin` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `pub_makes_event` FOREIGN KEY (`Events_ID`) REFERENCES `public_events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `priv_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `priv_made_by_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `priv_made_by_sadmin` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `public_events`
 --
 ALTER TABLE `public_events`
-  ADD CONSTRAINT `pub_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `pub_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `pub_made_by_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `pub_made_by_sadmin` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `rso`
 --
 ALTER TABLE `rso`
   ADD CONSTRAINT `RSO_created_by` FOREIGN KEY (`Admin_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- Constraints for table `rso_events`
+--
+ALTER TABLE `rso_events`
+  ADD CONSTRAINT `rso_event_owned_by` FOREIGN KEY (`RSO_ID`) REFERENCES `rso` (`RSO_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `rsoevent_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `super_admin`
