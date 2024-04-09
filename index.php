@@ -1,36 +1,29 @@
- <?php
+<?php
 	include 'db_connection.php';
 	$conn = OpenCon();
 	mysqli_close($conn);
 ?>
-<style>
-mheader {
-	position: relative;
-	left: 30px;
-	size: 20;
-}
-mfooter {
-	position: fixed;
-	bottom: 30px;
-}
-a {
-	color: blue;
-}
-</style>
 
 <html>
-	<title>UCF Events Project</title>
-		<mheader>
-			UCF Database Project<br>
-			Authors: Joshua, Damian, Evan<br>
-		</mheader>
-		
-		<a href="link"> Test link</a>
-	
-	
-	
-	
-	
-	
-	<mfooter>Insert generic footer here</footer>
+<head>
+<title>UCF Events Project</title>
+<!-- Shared style sheet for all pages.-->
+<link rel="stylesheet" type="text/css" href="style.css"/> 
+<!-- Header content -->
+<header id="app-header"></header>
+<script async src="header.js"></script>
+</head>
+<!-- Start of index.php -->
+<body>
+
+<div class="content">
+  <p>A topnav, content and a footer.</p>
+
+  <a href="link"> Testing link</a>	
+</div>
+
+<!-- Footer content -->
+<header id="app-footer"></header>
+<script async src="footer.js"></script>
+</body>
 </html>
