@@ -1,0 +1,369 @@
+* {
+    margin: 0;
+  }
+  body {
+    background-color: #202020;
+  }
+  
+  #title {
+    font-size: 40px;
+    top: 10px;
+    left: 10px;
+    color: #ffffff;
+  }
+  
+  #contactTableContainer {
+    margin-top: 3.5rem;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+  }
+  
+  #contactTableSmallerContainer {
+    width: 100%;
+    margin: auto;
+  }
+  
+  .searchBar {
+    justify-content: end;
+    display: flex;
+  }
+  
+  #searchButton {
+    padding: 0.7rem 1.2rem;
+    width: 5%;
+    background-color: #00000035;
+    border: 3px darkgrey solid;
+    margin-left: 0px;
+    margin-top: auto;
+    margin-bottom: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0px 25px 25px 0px;
+  }
+  
+  #searchImage {
+    width: 20px;
+  }
+  
+  #searchContact {
+    color: white;
+    font-size: 1rem;
+    padding: 0.6rem;
+    border: 3px darkgrey solid;
+    border-right: 0px;
+    border-radius: 40px 0px 0px 40px;
+    margin-right: 0px;
+    background-color: #00000035;
+  }
+  
+  #addContactForm,
+  #editContactForm {
+    display: flex;
+    position: absolute;
+    top: 25%;
+    left: 40%;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: fit-content;
+    color: white;
+    text-align: left;
+    padding: 1.5rem;
+    border-radius: 40px;
+    border: 1px solid #6e6e6e;
+    background-color: #202020;
+    filter: drop-shadow(1px 1px 10px #613583);
+  }
+  
+  #addContactForm input,
+  #editContactForm input {
+    width: 95%;
+    margin-bottom: 0.5rem;
+    border: 1px #6e6e6e solid;
+    border-radius: 6px;
+    padding: 0.5rem;
+    background-color: #202020;
+    color: white;
+  }
+  
+  #addContactForm button,
+  #editContactForm button {
+    background-color: #5d3fd3;
+    border: 0;
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .contactTable {
+    border-collapse: collapse;
+    color: white;
+    padding: 1rem;
+    margin: 1rem auto;
+    font-size: 1.25rem;
+    border-radius: 25px;
+    width: 100%;
+  }
+  
+  tbody {
+    border: 1px solid #6e6e6e;
+    border-top: none;
+  }
+  
+  thead {
+    background-color: #5d3fd3;
+  }
+  
+  .contactTable td {
+    padding: 0.75rem 1rem;
+    border-right: 1px solid #6e6e6e;
+    border-left: 1px solid #6e6e6e;
+    border-bottom: 1px solid #6e6e6e;
+  }
+  .contactTable th {
+    padding: 1.25rem 1rem;
+    text-align: left;
+    border: 2px solid #412c93;
+  }
+  
+  tbody button {
+    background-color: #202020;
+    color: white;
+    padding: 0.4rem;
+    border-radius: 25px;
+    width: 50%;
+  }
+  
+  th:first-of-type {
+    border-top-left-radius: 10px;
+  }
+  th:last-of-type {
+    border-top-right-radius: 10px;
+  }
+  tr:last-of-type td:first-of-type {
+    border-bottom-left-radius: 10px;
+  }
+  tr:last-of-type td:last-of-type {
+    border-bottom-right-radius: 10px;
+  }
+  
+  @media (max-width: 650px) {
+    th {
+      display: none;
+    }
+  
+    td {
+      display: block;
+    }
+  
+    td:first-child {
+      padding-top: 1.5rem;
+    }
+  
+    td:last-child {
+      padding-bottom: 1.5rem;
+    }
+  
+    td::before {
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+  
+    td:first-child::before {
+      content: "name" ": ";
+    }
+  
+    td:nth-child(2)::before {
+      content: "name" ": ";
+    }
+  
+    td:nth-child(3)::before {
+      content: "email" ": ";
+    }
+  
+    td:nth-child(4)::before {
+      content: "phone number" ": ";
+    }
+  
+    td:nth-child(5)::before {
+      content: "address" ": ";
+    }
+  }
+  
+  #headerBar {
+    margin-top: 10px;
+    margin: 10px 20px;
+    display: flex;
+    color: white;
+    padding: 10px;
+    justify-content: space-around;
+    text-align: center;
+    align-items: center;
+  }
+  
+  #logo {
+    width: 50px;
+    height: auto;
+  }
+  
+  #logoIcon {
+    display: flex;
+    align-items: left;
+    width: 25%;
+  }
+  
+  .navBar > a {
+    padding: 10px 40px;
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+  }
+  
+  .navBar > a:hover {
+    color: darkgrey;
+  }
+  
+  .navBar {
+    background-color: #00000035;
+    display: flex;
+    padding: 5px;
+    color: white;
+    border-radius: 40px;
+    position: relative;
+    text-align: center;
+  }
+  
+  .buttons {
+    font-size: 30px;
+    text-align: center;
+    width: 80%;
+    display: block;
+    margin: 0 auto 4%;
+    font-family: "Ubuntu", sans-serif;
+  }
+  
+  .buttons:hover {
+    background-color: #9503ff;
+    color: #ffffff;
+    opacity: 50%;
+  }
+  
+  #welcomeMessage {
+    width: 25%;
+    text-align: right;
+  }
+  
+  #loginLink {
+    text-align: left;
+  }
+  
+  #loginName,
+  #loginPassword,
+  #firstName,
+  #lastName {
+    font-size: 30px;
+    margin-bottom: 1%;
+    font-family: "Ubuntu", sans-serif;
+    border: 2px solid #5d3fd3; /* Added border style */
+    background-color: #202020; /* Added background color */
+    color: #ffffff; /* Added text color */
+    padding: 10px; /* Added padding for space inside the input field */
+    text-align: left; /* Set text alignment to left */
+    border-radius: 20px;
+  }
+  
+  #loginPassword {
+    margin-bottom: 2.5rem;
+  }
+  
+  #loginName:hover,
+  #loginPassword:hover,
+  #lastName:hover,
+  #firstName:hover {
+    background-color: #696969;
+  }
+  
+  #loginName:focus,
+  #loginPassword:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #5d3fd3; /* Change border color on focus */
+  }
+  
+  #loginName::placeholder,
+  #loginPassword::placeholder {
+    color: #ffffff;
+    margin-bottom: 1%;
+  }
+  
+  #loginButton,
+  #registerButton {
+    font-size: 30px;
+    border-radius: 25px;
+    width: 100%;
+    margin: 0 auto 2%; /* Added margin-bottom value */
+    font-family: "Ubuntu", sans-serif;
+    color: #ffffff;
+    background-color: #5d3fd3;
+    border: none;
+    padding: 10px 20px;
+    text-align: center; /* Center align text on the button */
+  }
+  
+  #loginLinkText {
+    color: white;
+  }
+  
+  #loginLink {
+    color: #5d3fd3;
+  }
+  
+  #logoIconAndName {
+    display: flex;
+    padding: 1rem;
+  }
+  
+  .loginContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5%;
+  }
+  
+  #loginDiv {
+    font-size: 20px;
+    display: flex;
+    width: 30%;
+    font-family: "Ubuntu", sans-serif;
+    text-align: center; /* Center align text */
+    flex-direction: column;
+  }
+  
+  #loginDiv label {
+    margin: 1rem 0rem;
+    color: white;
+    text-align: left; /* Set text alignment to left */
+    border-radius: 50px; /* Added border-radius for rounded corners */
+  }
+  
+  #loginDiv label[for="loginName"],
+  #loginDiv label[for="loginPassword"] {
+    margin-bottom: 1.5%; /* Adjusted margin-bottom value */
+  }
+  
+  #inner-title {
+    margin-bottom: 2%; /* Adjusted margin value */
+    color: #ffffff;
+    text-align: left;
+    font-size: xx-large;
+    font-weight: 700;
+  }
+  select {
+    width: 30%;
+    margin-left: 35%;
+    margin-top: 2%;
+    font-size: 0.75em;
+    font-family: "Ubuntu", sans-serif;
+  }
