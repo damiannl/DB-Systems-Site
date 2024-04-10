@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script type="text/javascript" src="js/code.js"></script>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <title>Event Manager</title>
+  </head>
+  <body onload="readCookie()">
+    <script type="text/javascript">
+      displayEvents();
+    </script>
+    <div id="headerBar">
+      <div class="navBar">
+        <a onclick="showAddEventForm()">Add Event</a>
+        <a onclick="displayEvents()">Show Events</a>
+        <a href="http://4331cop.com/SmallProject-Group27/" onclick="doLogOut()"
+          >Log Out</a
+        >
+      </div>
+      <h3 id="welcomeMessage"></h3>
+    </div>
+    <div id="contactTableContainer">
+      <!-- the container that holds no empty space just table. -->
+      <div id="contactTableSmallerContainer">
+        <div class="searchBar">
+          <label for="searchContact"></label><input type="text" id="searchContact" placeholder="Search..." />
+          <button id="searchButton" onclick="searchContacts()">
+            <img src="./images/search.png" alt="search icon" id="searchImage" />
+          </button>
+        </div>
+        <table class="contactTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Time</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Phone</th>
+              <th>Email</th>
+              
+              <!-- Add a column for edit and delete buttons -->
+            </tr>
+          </thead>
+          <tbody id="contactTableBody">
+            <!-- Add an ID to the table body for dynamically adding event -->
+            <!-- Events will be dynamically added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="addContactForm" style="display: none">
+      <h2>Add Contact</h2>
+      <form onsubmit="addContact(); return false;">
+        <label for="newFirstName">First Name:</label>
+        <input type="text" id="newFirstName" required /><br />
+        <label for="newLastName">Last Name:</label>
+        <input type="text" id="newLastName" required /><br />
+        <label for="newEmail">Email:</label>
+        <input type="email" id="newEmail" required /><br />
+        <label for="newPhoneNumber">Phone Number:</label>
+        <input type="tel" id="newPhoneNumber" required /><br />
+        <label for="newAddress">Address:</label>
+        <input type="text" id="newAddress" required /><br />
+        <!-- <input id="addContactButton" type="submit" value="Add Contact" /> -->
+        <button type="submit" value="Add Contact">Add Contact</button>
+      </form>
+    </div>
+
+    <div id="editContactForm" style="display:none;">
+      <h2>Edit Contact</h2>
+      <label for="editFirstName">First Name:</label><input type="text" id="editFirstName" placeholder="First Name"><br>
+      <label for="editLastName">Last Name:</label><input type="text" id="editLastName" placeholder="Last Name"><br>
+      <label for="editEmail">Email:</label><input type="email" id="editEmail" placeholder="Email"><br>
+      <label for="editPhoneNumber">Phone Number:</label><input type="tel" id="editPhoneNumber" placeholder="Phone Number"><br>
+      <label for="editAddress">Address:</label><input type="text" id="editAddress" placeholder="Address"><br>
+      <button onclick="updateContact()">Save Changes</button>
+    </div>
+  </body>
+</html>
