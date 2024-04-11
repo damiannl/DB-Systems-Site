@@ -1,9 +1,18 @@
 <?php
 
-function addUser($password, $name) {
-	$stmt = $conn->prepare("INSERT INTO users (pass, name) VALUES (?)");
+//Adds a user into the database and returns the user ID associated with that user. User IDs
+// are an auto-incrementing number, so MAX works fine to find the value of any new user, even if
+// old users are deleted.
+function addUser($conn, $password, $name) {
+	$stmt = $conn->prepare("INSERT INTO users (pass, name) VALUES (?,?)");
 	$stmt->bind_param("ss", $password, $name);
 	$stmt->execute();
+	$stmt = $conn->prepare("SELECT MAX(UID) FROM users U");
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$userid = mysqli_fetch_row($result);
+	//printf("User ID of newly created user = %d", $userid[0]);
+	return($userid[0]);
 }
 
 function viewUsers($conn) {
@@ -56,4 +65,17 @@ function isAdmin($conn, $uid) {
 	echo("true");
 	return true;
 }
+
+//Returns an array containing the data of an event given an event ID
+function getEvent($conn, $Events_ID) {
+	$sql = "SELECT * FROM events WHERE Events_ID=?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $Events_ID);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+	return $array;
+}
+
+
 ?>
