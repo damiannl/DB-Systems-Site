@@ -77,5 +77,46 @@ function getEvent($conn, $Events_ID) {
 	return $array;
 }
 
+//Get a list of events hosted by an RSO from a given RSO ID
+function getRSOEvents($conn, $RSO_ID) {
+	$sql = "SELECT * FROM events E, rso_events R WHERE E.Events_ID=R.Events_ID AND R.RSO_ID=?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $RSO_ID);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+	return $array;
+}
 
+//Return a list of all events a user can see
+function viewEvents($conn, $uid) {
+	//If user is an admin, they can see all events
+	if (isAdmin($conn, $uid) == true) {
+		$sql = "SELECT * FROM events";
+		$result = mysqli_query($conn, $sql);
+		$array = mysqli_fetch_all($result, MYSQLI_NUM);
+		return $array;
+	}
+	//Else user can see public events, private events from university, and RSO events for which
+	//RSO they are a part of 
+	else {
+		//Fetch RSO events they can see
+		$sql = "SELECT * FROM events E, rso_events R, users U WHERE E.Events_ID = R.Events_ID AND 
+				R.RSO_ID = U.RSO_ID";
+		$result = mysqli_query($conn, $sql);
+		$array = mysqli_fetch_all($result, MYSQLI_NUM);
+		//Fetch public events (everyone can see)
+		$sql = "SELECT * FROM events E, public_events P WHERE E.Events_ID=P.Events_ID";
+		$result = mysqli_query($conn, $sql);
+		$array2 = mysqli_fetch_all($result, MYSQLI_NUM);
+		$result_arr = array_merge($array, $array2);
+		//Fetch private events for university (still everyone can see bc there is no implementation for
+		//events of other universities yet)
+		$sql = "SELECT * FROM events E, private_events P WHERE E.Events_ID=P.Events_ID";
+		$result = mysqli_query($conn, $sql);
+		$array2 = mysqli_fetch_all($result, MYSQLI_NUM);
+		$result_arr = array_merge($array, $array2);
+		return $result_arr;
+	}
+}
 ?>
