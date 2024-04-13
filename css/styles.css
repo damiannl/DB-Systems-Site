@@ -26,8 +26,14 @@
   }
   
   .searchBar {
-    justify-content: end;
+    justify-content: flex-end;
     display: flex;
+  }
+
+  .searchBar h1 {
+    text-align: left;
+    margin-right: auto;
+    position: sticky;
   }
   
   #searchButton {
