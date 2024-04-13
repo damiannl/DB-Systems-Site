@@ -44,7 +44,7 @@ function doRegister() {
 
         saveCookie();
 
-        window.location.href = "index.html";
+        window.location.href = "./";
       }
     };
     xhr.send(jsonPayload);
@@ -145,7 +145,7 @@ function readCookie() {
   }
 
   if (userId < 0) {
-    window.location.href = "index.html";
+    window.location.href = "./";
   } else {
     document.getElementById("welcomeMessage").textContent =
       "Welcome, " + firstName + "!";
