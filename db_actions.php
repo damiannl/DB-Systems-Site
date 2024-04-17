@@ -105,10 +105,7 @@ function verifyLogin($conn) {
 
 //Function that determines if a user is an admin or not from a user ID
 function isAdmin($conn) {
-	//unpack received json data
-	$json = file_get_contents('php://input');
-	$json_obj = json_decode($json, true);
-	$uid = $json_obj['id'];
+	$uid = $_GET['id'];
 
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
@@ -126,11 +123,7 @@ function isAdmin($conn) {
 
 //Returns an array containing the data of an event given an event ID
 function getEvent($conn) {
-	//unpack received json data
-	$json = file_get_contents('php://input');
-	$json_obj = json_decode($json, true);
-	$Events_ID = $json_obj['events_ID'];
-
+	$Events_ID = $_GET['events_ID'];
 
 	$sql = "SELECT * FROM events WHERE Events_ID=?";
 	$stmt = $conn->prepare($sql);
@@ -150,10 +143,7 @@ function getEvent($conn) {
 
 //Get a list of events hosted by an RSO from a given RSO ID
 function getRSOEvents($conn) {
-	//unpack received json data
-	$json = file_get_contents('php://input');
-	$json_obj = json_decode($json, true);
-	$RSO_ID = $json_obj['rso_ID'];
+	$RSO_ID = $_GET['rso_ID'];
 	
 	$sql = "SELECT * FROM events E, rso_events R WHERE E.Events_ID=R.Events_ID AND R.RSO_ID=?";
 	$stmt = $conn->prepare($sql);
@@ -171,7 +161,7 @@ function getRSOEvents($conn) {
 
 //Return a list of all events a user can see
 function viewEvents($conn) {
-	//get uid
+	$UID = $_GET['UID'];
 	//If user is an admin, they can see all events
 	if (isAdmin($conn, $uid) == true) {
 		$sql = "SELECT * FROM events";
