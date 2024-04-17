@@ -57,7 +57,7 @@ function addUser($conn) {
 	//printf("User ID of newly created user = %d", $userid[0]);
 
 	//Return the user ID of the newly created user in JSON format
-	$arr = array('id' => $userid[0]);
+	$arr = array('id' => $userid[0], 'email' => $email);
 	return (json_encode($arr));
 }
 
