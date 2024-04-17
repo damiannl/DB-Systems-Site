@@ -2,19 +2,17 @@
 <html lang="en">
 
 <head>
-    <script type="text/javascript" src="js/md5.js"></script>
     <script type="text/javascript" src="js/code.js"></script>
     <script type="text/php" src="db_actions.php"></script>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="css/styles.css" rel="stylesheet" />
-
     <title>Event Manager</title>
 </head>
 
 <body onload="readCookie()">
-    <?php include "db_actions.php"; displayEvents(); ?>
+    <!---<?php include "db_actions.php"; displayEvents(); ?> ---->
     <div id="headerBar">
         <div class="navBar">
             <a onclick="showAddEventForm()">Add Event</a>
@@ -27,7 +25,7 @@
         <!-- the container that holds no empty space just table. -->
         <div id="contactTableSmallerContainer">
             <div class="searchBar">
-                <h1 id="title">Manage RSOs</h1>
+                <h1 id="title">View RSOs</h1>
                 <label for="searchContact"></label><input type="text" id="searchContact" placeholder="Search..." />
                 <button id="searchButton" onclick="searchMembers()">
                     <img src="./images/searchUser.png" alt="search icon" id="searchImage" />

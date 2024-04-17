@@ -1,4 +1,4 @@
-const urlBase = "/db_actions.php"; // put the base url here, i deleted my old one
+const urlBase = "/db_actions.php";
 const extension = "php";
 
 let userId = 0;

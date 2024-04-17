@@ -30,6 +30,7 @@ switch ($action) {
 		echo viewEvents($conn);
 		break;
 	default:
+		http_response_code(404);
 		echo("Invalid action");
 		break;
 }
@@ -62,25 +63,17 @@ function addUser($conn) {
 }
 
 function viewUsers($conn) {
-	$sql = "SELECT UID,pass FROM users";
+	$sql = "SELECT UID,name FROM users";
 	$result = mysqli_query($conn,$sql);
-	$row=mysqli_fetch_all($result,MYSQLI_ASSOC);
-	$count = count($row);
-	for($x=0;$x<$count;$x++){ //first index is the row of table, second index is column
-	  printf("UID: %d,", $row[$x]["UID"]);
-	  printf("pass: %s\n", $row[$x]["pass"]);
-	  }
+	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);
+	return(json_encode($array));
 }
 
 function viewAdmins($conn) {
 	$sql = "SELECT U.UID, A.Admins_ID FROM users U,admin A WHERE U.UID=A.UID";
 	$result = mysqli_query($conn,$sql);
-	$row = mysqli_fetch_all($result,MYSQLI_ASSOC);
-	$count = count($row);
-	for($x = 0; $x < $count; $x++){ //first index is the row of table, second index is column
-	  printf("UID: %d,", $row[$x]["UID"]);
-	  printf("Admins_ID: %d\n", $row[$x]["Admins_ID"]);
-	  }
+	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);
+	return(json_encode($array));
 }
 
 //Function that takes a user ID and a password and checks if there's a user that matches those credentials
@@ -112,7 +105,11 @@ function verifyLogin($conn) {
 
 //Function that determines if a user is an admin or not from a user ID
 function isAdmin($conn) {
-	//get uid
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$uid = $json_obj['id'];
+
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $uid);
@@ -180,7 +177,7 @@ function viewEvents($conn) {
 		$sql = "SELECT * FROM events";
 		$result = mysqli_query($conn, $sql);
 		$array = mysqli_fetch_all($result, MYSQLI_NUM);
-		return $array;
+		return (json_encode($array));
 	}
 	//Else user can see public events, private events from university, and RSO events for which
 	//RSO they are a part of 
@@ -201,7 +198,7 @@ function viewEvents($conn) {
 		$result = mysqli_query($conn, $sql);
 		$array2 = mysqli_fetch_all($result, MYSQLI_NUM);
 		$result_arr = array_merge($array, $array2);
-		return $result_arr;
+		return json_encode($result_arr);
 	}
 }
 ?>
