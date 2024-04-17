@@ -1,18 +1,64 @@
 <?php
+include 'db_connection.php';
+$conn = OpenCon();
+
+$action = $_GET['action'];
+
+switch ($action) {
+	case "addUser":
+		echo addUser($conn);
+		break;
+	case "viewUsers":
+		echo viewUsers($conn);
+		break;
+	case "viewAdmins":
+		echo viewAdmins($conn);
+		break;
+	case "verifyLogin":
+		echo verifyLogin($conn);
+		break;
+	case "isAdmin":
+		echo isAdmin($conn);
+		break;
+	case "getEvent":
+		echo getEvent($conn);
+		break;
+	case "getRSOEvents":
+		echo getRSOEvents($conn);
+		break;
+	case "viewEvents":
+		echo viewEvents($conn);
+		break;
+	default:
+		echo("Invalid action");
+		break;
+}
+
+mysqli_close($conn);
+
 
 //Adds a user into the database and returns the user ID associated with that user. User IDs
 // are an auto-incrementing number, so MAX works fine to find the value of any new user, even if
 // old users are deleted.
-function addUser($conn, $password, $name) {
+function addUser($conn) {
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$password = $json_obj['password'];
+	$email = $json_obj['email'];
+
 	$stmt = $conn->prepare("INSERT INTO users (pass, name) VALUES (?,?)");
-	$stmt->bind_param("ss", $password, $name);
+	$stmt->bind_param("ss", $password, $email);
 	$stmt->execute();
 	$stmt = $conn->prepare("SELECT MAX(UID) FROM users U");
 	$stmt->execute();
 	$result = $stmt->get_result();
 	$userid = mysqli_fetch_row($result);
 	//printf("User ID of newly created user = %d", $userid[0]);
-	return($userid[0]);
+
+	//Return the user ID of the newly created user in JSON format
+	$arr = array('id' => $userid[0]);
+	return (json_encode($arr));
 }
 
 function viewUsers($conn) {
@@ -38,20 +84,35 @@ function viewAdmins($conn) {
 }
 
 //Function that takes a user ID and a password and checks if there's a user that matches those credentials
-function verifyLogin($conn, $uid, $pass) {
-	$sql = "SELECT * FROM users WHERE UID = ? AND pass = ?";
+function verifyLogin($conn) {
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$password = $json_obj['password'];
+	$email = $json_obj['email'];
+
+
+	$sql = "SELECT * FROM users WHERE name = ? AND pass = ?";
 	$stmt = $conn->prepare($sql);
-	$stmt->bind_param("ss", $uid, $pass);
+	$stmt->bind_param("ss", $email, $password);
 	$stmt->execute();
 	$result = $stmt->get_result();
 	//Fetch all ***shouldnt*** be problematic here, since user IDs are unique only 1 entry should be in the array
 	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
 	//printf("result is: %s", $array[0]["name"]);
-	return $array;
+	//If the array is empty, then the user does not exist
+	if($array == null) {
+		$arr = array('id' => 0);
+		return (json_encode($arr));
+	} else {
+		$arr = array('id' => $array[0]["UID"]);
+		return (json_encode($arr));
+	}
 }
 
 //Function that determines if a user is an admin or not from a user ID
-function isAdmin($conn, $uid) {
+function isAdmin($conn) {
+	//get uid
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $uid);
@@ -67,7 +128,8 @@ function isAdmin($conn, $uid) {
 }
 
 //Returns an array containing the data of an event given an event ID
-function getEvent($conn, $Events_ID) {
+function getEvent($conn) {
+	//get eventiD
 	$sql = "SELECT * FROM events WHERE Events_ID=?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $Events_ID);
@@ -78,7 +140,8 @@ function getEvent($conn, $Events_ID) {
 }
 
 //Get a list of events hosted by an RSO from a given RSO ID
-function getRSOEvents($conn, $RSO_ID) {
+function getRSOEvents($conn) {
+	//get RSO ID
 	$sql = "SELECT * FROM events E, rso_events R WHERE E.Events_ID=R.Events_ID AND R.RSO_ID=?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $RSO_ID);
@@ -89,7 +152,8 @@ function getRSOEvents($conn, $RSO_ID) {
 }
 
 //Return a list of all events a user can see
-function viewEvents($conn, $uid) {
+function viewEvents($conn) {
+	//get uid
 	//If user is an admin, they can see all events
 	if (isAdmin($conn, $uid) == true) {
 		$sql = "SELECT * FROM events";
