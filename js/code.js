@@ -1,4 +1,4 @@
-const urlBase = ""; // put the base url here, i deleted my old one
+const urlBase = "/db_actions.php"; // put the base url here, i deleted my old one
 const extension = "php";
 
 let userId = 0;
@@ -15,6 +15,7 @@ function doRegister() {
   document.getElementById("loginResult").innerHTML = "";
 
   let tmp = {
+    func: "addUser",
     email: email,
     password: password,
     firstName: firstName,
@@ -22,7 +23,7 @@ function doRegister() {
   };
   let jsonPayload = JSON.stringify(tmp);
 
-  let url = urlBase + "/Register." + extension;
+  let url = urlBase;
 
   let xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
@@ -31,7 +32,7 @@ function doRegister() {
     xhr.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {
         let jsonObject = JSON.parse(xhr.responseText);
-        userId = jsonObject.id;
+        userId = jsonObject.userId;
 
         if (userId < 1) {
           document.getElementById("loginResult").innerHTML =
@@ -58,17 +59,17 @@ function doLogin() {
   firstName = "";
   lastName = "";
 
-  let email = document.getElementById("loginName").value;
+  let name = document.getElementById("loginName").value;
   let password = document.getElementById("loginPassword").value;
   // var hash = md5( password );
 
   document.getElementById("loginResult").innerHTML = "";
 
-  let tmp = { email: email, password: password };
+  let tmp = { func: "verifyLogin", name: name, password: password };
   // var tmp = {login:login,password:hash};
   let jsonPayload = JSON.stringify(tmp);
 
-  let url = urlBase + "/Login." + extension;
+  let url = urlBase;
 
   let xhr = new XMLHttpRequest();
   xhr.open("POST", url, true);
@@ -76,7 +77,9 @@ function doLogin() {
   try {
     xhr.onreadystatechange = function () {
       if (this.readyState === 4 && this.status === 200) {
-        let jsonObject = JSON.parse(xhr.responseText);
+        let jsonObject = xhr.responseText;
+        console.log(jsonObject);
+        
         userId = jsonObject.id;
 
         if (userId < 1) {

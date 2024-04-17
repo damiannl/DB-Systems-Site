@@ -1,5 +1,97 @@
 <?php
+// receive a POST call
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	// check if the request has the expected parameters
+	if (isset($_POST["func"])) {
+		// retrieve the values from the POST parameters
+		$func = $_POST["func"];
 
+		switch ($func) {
+			case "addUser":
+				if (isset($_POST["password"]) && isset($_POST["name"])) {
+					$password = $_POST["password"];
+					$name = $_POST["name"];
+					$userid = addUser($conn, $password, $name);
+					echo "User added with ID: " . $userid;
+					return $userid;
+				} else {
+					echo "Missing parameters in the POST request.";
+				}
+				break;
+			case "viewUsers":
+				viewUsers($conn);
+				break;
+			case "viewAdmins":
+				viewAdmins($conn);
+				break;
+			case "verifyLogin":
+				if (isset($_POST["uid"]) && isset($_POST["pass"])) {
+					$uid = $_POST["uid"];
+					$pass = $_POST["pass"];
+					$array = verifyLogin($conn, $uid, $pass);
+					if($array==null) {
+						echo("Invalid login credentials.");
+					}
+					else {
+						echo("Login successful.");
+					}
+					return $array;
+				} else {
+					echo "Missing parameters in the POST request.";
+				}
+				break;
+			case "isAdmin":
+				if (isset($_POST["uid"])) {
+					$uid = $_POST["uid"];
+					isAdmin($conn, $uid);
+				} else {
+					echo "Missing parameters in the POST request.";
+				}
+				break;
+			case "getEvent":
+				if (isset($_POST["Events_ID"])) {
+					$Events_ID = $_POST["Events_ID"];
+					$array = getEvent($conn, $Events_ID);
+					$count = count($array);
+					for($x=0;$x<$count;$x++){ //first index is the row of table, second index is column
+					  printf("Events_ID: %d,", $array[$x]["Events_ID"]);
+					  printf("Name: %s,", $array[$x]["Name"]);
+					  printf("Description: %s,", $array[$x]["Description"]);
+					  printf("Location: %s,", $array[$x]["Location"]);
+					  printf("Date: %s,", $array[$x]["Date"]);
+					  printf("Time: %s,", $array[$x]["Time"]);
+					  printf("Category: %s\n", $array[$x]["Category"]);
+					}
+				} else {
+					echo "Missing parameters in the POST request.";
+				}
+				break;
+			case "getRSOEvents":
+				if (isset($_POST["RSO_ID"])) {
+					$RSO_ID = $_POST["RSO_ID"];
+					$array = getRSOEvents($conn, $RSO_ID);
+					$count = count($array);
+					for($x=0;$x<$count;$x++){ //first index is the row of table, second index is column
+					  printf("Events_ID: %d,", $array[$x]["Events_ID"]);
+					  printf("Name: %s,", $array[$x]["Name"]);
+					  printf("Description: %s,", $array[$x]["Description"]);
+					  printf("Location: %s,", $array[$x]["Location"]);
+					  printf("Date: %s,", $array[$x]["Date"]);
+					  printf("Time: %s,", $array[$x]["Time"]);
+					  printf("Category: %s\n", $array[$x]["Category"]);
+					}
+				} else {
+					echo "Missing parameters in the POST request.";
+				}
+				break;
+		}
+		// return a response if needed
+		// ...
+	} else {
+		// handle the case when the expected parameters are missing
+		echo "Missing parameters in the POST request.";
+	}
+}
 //Adds a user into the database and returns the user ID associated with that user. User IDs
 // are an auto-incrementing number, so MAX works fine to find the value of any new user, even if
 // old users are deleted.
