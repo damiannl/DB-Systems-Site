@@ -96,22 +96,19 @@ function doLogin() {
 
 function doLogOut() {
   userId = 0;
-  firstName = "";
-  lastName = "";
-  saveCookie();
+  email = "";
+  saveCookie(email);
 }
 
-function saveCookie() {
+function saveCookie(tempemail) {
   let minutes = 20;
   let date = new Date();
   date.setTime(date.getTime() + minutes * 60 * 1000);
   console.log(userId);
-  console.log(firstName);
+  console.log(tempemail);
   document.cookie =
-    "firstName=" +
-    firstName +
-    ",lastName=" +
-    lastName +
+    "email=" +
+    tempemail +
     ",userId=" +
     userId +
     ";expires=" +
@@ -119,31 +116,31 @@ function saveCookie() {
 }
 
 function readCookie() {
-  console.log(firstName);
-  console.log(lastName);
-  firstName = "";
-  lastName = "";
+  console.log(userId);
+  console.log(email);
+  email = "";
   userId = -1;
   let data = document.cookie;
+  console.log(data);
   let splits = data.split(",");
   for (var i = 0; i < splits.length; i++) {
     let thisOne = splits[i].trim();
     let tokens = thisOne.split("=");
-    if (tokens[0] === "firstName") {
+    if (tokens[0] === "email") {
       console.log("FN");
-      firstName = tokens[1];
-    } else if (tokens[0] === "lastName") {
-      lastName = tokens[1];
+      email = tokens[1];
+      console.log(tokens[1]);
     } else if (tokens[0] === "userId") {
       userId = parseInt(tokens[1].trim());
     }
+    console.log(email);
   }
 
   if (userId < 0) {
     window.location.href = "./";
   } else {
     document.getElementById("welcomeMessage").textContent =
-      "Welcome, " + firstName + "!";
+      "Welcome, " + email + " " + userId + "!";
     //print out the user id to the console
     console.log(userId);
   }
