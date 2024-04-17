@@ -129,26 +129,47 @@ function isAdmin($conn) {
 
 //Returns an array containing the data of an event given an event ID
 function getEvent($conn) {
-	//get eventiD
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$Events_ID = $json_obj['events_ID'];
+
+
 	$sql = "SELECT * FROM events WHERE Events_ID=?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $Events_ID);
 	$stmt->execute();
 	$result = $stmt->get_result();
 	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
-	return $array;
+
+	//If the array is empty, then the event for that id does not exist
+	if($array == null) {
+		http_response_code(400);
+		return "";
+	} else {
+		return (json_encode($array));
+	}
 }
 
 //Get a list of events hosted by an RSO from a given RSO ID
 function getRSOEvents($conn) {
-	//get RSO ID
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$RSO_ID = $json_obj['rso_ID'];
+	
 	$sql = "SELECT * FROM events E, rso_events R WHERE E.Events_ID=R.Events_ID AND R.RSO_ID=?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $RSO_ID);
 	$stmt->execute();
 	$result = $stmt->get_result();
 	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
-	return $array;
+	if($array == null) {
+		http_response_code(400);
+		return "";
+	} else {
+		return (json_encode($array));
+	}
 }
 
 //Return a list of all events a user can see
