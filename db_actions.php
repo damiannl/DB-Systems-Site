@@ -17,6 +17,9 @@ switch ($action) {
 	case "viewAdmins":
 		echo viewAdmins($conn);
 		break;
+	case "getNameFromAdmin":
+		echo getNameFromAdmin($conn);
+		break;
 	case "verifyLogin":
 		echo verifyLogin($conn);
 		break;
@@ -118,6 +121,18 @@ function viewAdmins($conn) {
 
 }
 
+function getNameFromAdmin($conn) {
+	$adminId = $_GET['adminId'];
+	$sql = "SELECT U.name FROM users U WHERE U.UID = 
+		(SELECT U1.UID FROM users U1, admin A WHERE A.UID = U1.UID AND A.Admins_ID = ?)";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $adminId);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$name = mysqli_fetch_row($result);
+	return json_encode(array("name" => $name));
+}
+
 //Function that takes a user ID and a password and checks if there's a user that matches those credentials
 function verifyLogin($conn) {
 	//unpack received json data
@@ -147,7 +162,7 @@ function verifyLogin($conn) {
 
 //Function that determines if a user is an admin or not from a user ID
 function isAdmin($conn) {
-	$uid = $_GET['UID'];
+	$uid = $_GET['userId'];
 
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
@@ -204,7 +219,7 @@ function getRSOEvents($conn) {
 
 //Return a list of all events a user can see
 function viewEvents($conn) {
-	$UID = $_GET['UID'];
+	$uid = $_GET['userId'];
 	//If user is an admin, they can see all events
 	if (isAdmin($conn, $uid) == true) {
 		$sql = "SELECT * FROM events";
