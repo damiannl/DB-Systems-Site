@@ -3,10 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 02, 2024 at 10:54 AM
+-- Generation Time: Apr 17, 2024 at 11:38 PM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -31,8 +32,7 @@ DROP TABLE IF EXISTS `admin`;
 CREATE TABLE IF NOT EXISTS `admin` (
   `UID` int NOT NULL,
   `Admins_ID` int NOT NULL,
-  `Admins_name` text,
-  PRIMARY KEY (`UID`),
+  PRIMARY KEY (`UID`,`Admins_ID`),
   KEY `Admins_ID` (`Admins_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -40,8 +40,11 @@ CREATE TABLE IF NOT EXISTS `admin` (
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`UID`, `Admins_ID`, `Admins_name`) VALUES
-(2, 0, 'default_admin');
+INSERT INTO `admin` (`UID`, `Admins_ID`) VALUES
+(2, 0),
+(27, 1),
+(28, 2),
+(31, 3);
 
 -- --------------------------------------------------------
 
@@ -60,6 +63,16 @@ CREATE TABLE IF NOT EXISTS `comments` (
   KEY `posted_by` (`UID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`Events_ID`, `UID`, `text`, `rating`, `timestamp`) VALUES
+(2, 28, 'Scuba class was very fun and informative. I can\'t wait to get the full certification!', 4, '2024-04-17 22:57:50'),
+(3, 28, 'The free coffee was a nice treat. Great study session.', 4, '2024-04-17 21:27:44'),
+(3, 31, 'Coffee was cold. No creamer. Lame.', 1, '2024-04-17 21:28:07'),
+(8, 27, 'Wow! The staff were super friendly and everything was very professional. 10/10, would bleed again.', 5, '2024-04-17 21:27:10');
+
 -- --------------------------------------------------------
 
 --
@@ -74,10 +87,21 @@ CREATE TABLE IF NOT EXISTS `events` (
   `Event_Name` text NOT NULL,
   `Description` text,
   PRIMARY KEY (`Events_ID`),
-  UNIQUE KEY `Lname` (`Lname`),
-  UNIQUE KEY `Lname_2` (`Lname`),
-  KEY `Lname_3` (`Lname`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `Lname` (`Lname`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `events`
+--
+
+INSERT INTO `events` (`Events_ID`, `Time`, `Lname`, `Event_Name`, `Description`) VALUES
+(2, '2024-04-17 00:00:00', 'RWC', 'Open Water Scuba Certification', 'Outdoor Adventure is proud to partner with Ranger Rick\'s SCUBA Adventure, one of the most experienced scuba dive outfitters, for our entry-level NAUI SCUBA certification course. This course is available for students who are currently enrolled and taking classes at UCF'),
+(3, '2024-04-15 10:00:00', 'Wesley', 'Student Lounge at Wesley at UCF', 'Join us for a free place to study, work and hangout! We also have free coffee and tea. Open Monday through Thursday from 10 a.m. to 4 p.m.\r\nClosed during Spring Break (March 18-21).'),
+(6, '2024-04-17 21:18:54', 'RWC', 'Adult First Aid/CPR/AED Class', 'The RWC offers American Red Cross Adult CPR/AED, First Aid Blended Learning classes. The Blended Learning class includes an online portion (approx. 2-3 hours long) and an instructor-led class skills session (approx. 2 hours long). The online portion must be completed prior to attending the in-class skills session. To register for this class please call 407-823-2408, or walk in to the RWC administrative office between 8 a.m.-5 p.m., Monday through Friday, and someone will assist you! '),
+(7, '2024-04-17 10:00:00', 'CB1', 'Gearing Up: Guide to FMC\'s Checkout Inventory', 'Join us for a showcase of the Faculty Multimedia Center\'s equipment available for checkout. This gear can be used at no cost by faculty during research or course related activities, including visiting historic landmarks, capturing live experiments, creating virtual tours of locations — otherwise inaccessibile to a class — and much more.'),
+(8, '2024-04-22 11:00:00', 'Memory Mall', 'Big Red Bus - Donate Blood Today!', 'Help us maintain a safe and ready blood supply for cancer patients, trauma patients, or when unexpected tragedies occur. The OneBlood bus will park on Memory Mall near the Veterans Memorial.\r\nWalk-ups are welcomed, and appointments are appreciated!'),
+(9, '2024-04-17 21:28:32', 'CB1', 'Society of Generic Students hangout', 'RSO Event test for generic RSO'),
+(10, '2024-04-17 18:45:28', 'CB1', 'Inserted Event', 'Event to be inserted into table for demonstration');
 
 -- --------------------------------------------------------
 
@@ -89,10 +113,20 @@ DROP TABLE IF EXISTS `location`;
 CREATE TABLE IF NOT EXISTS `location` (
   `Lname` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Address` text NOT NULL,
-  `Longitude` float DEFAULT NULL,
   `Latitude` float DEFAULT NULL,
+  `Longitude` float DEFAULT NULL,
   PRIMARY KEY (`Lname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `location`
+--
+
+INSERT INTO `location` (`Lname`, `Address`, `Latitude`, `Longitude`) VALUES
+('CB1', '12601 Aquarius Agora Dr, Orlando, FL 32816', 28.6037, -81.2005),
+('Memory Mall', 'Mercury Cir, Orlando, FL 32816', 28.6047, -81.1988),
+('RWC', '4000 Central Florida Blvd\r\nOrlando, FL 32816', 28.5959, -81.1996),
+('Wesley', '4217 E Plaza Dr', 28.6069, -81.1967);
 
 -- --------------------------------------------------------
 
@@ -123,9 +157,20 @@ CREATE TABLE IF NOT EXISTS `public_events` (
   `Admins_ID` int NOT NULL,
   `SuperAdmins_ID` int NOT NULL,
   PRIMARY KEY (`Events_ID`),
-  UNIQUE KEY `Admins_ID` (`Admins_ID`,`SuperAdmins_ID`),
-  KEY `pub_made_by_sadmin` (`SuperAdmins_ID`)
+  KEY `sadmin_creates_pubE` (`SuperAdmins_ID`),
+  KEY `Admins_ID` (`Admins_ID`,`SuperAdmins_ID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `public_events`
+--
+
+INSERT INTO `public_events` (`Events_ID`, `Admins_ID`, `SuperAdmins_ID`) VALUES
+(2, 0, 0),
+(3, 0, 0),
+(6, 0, 0),
+(7, 0, 0),
+(8, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -136,11 +181,21 @@ CREATE TABLE IF NOT EXISTS `public_events` (
 DROP TABLE IF EXISTS `rso`;
 CREATE TABLE IF NOT EXISTS `rso` (
   `RSO_ID` int NOT NULL AUTO_INCREMENT,
-  `RSO_name` int NOT NULL,
+  `RSO_name` text NOT NULL,
   `Admin_ID` int NOT NULL,
   PRIMARY KEY (`RSO_ID`),
   KEY `Admin_ID` (`Admin_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `rso`
+--
+
+INSERT INTO `rso` (`RSO_ID`, `RSO_name`, `Admin_ID`) VALUES
+(1, 'Society of Generic Students', 1),
+(2, 'Society of Superb Students', 2),
+(3, 'Society of Special Students', 3),
+(4, 'Inserted RSO', 1);
 
 -- --------------------------------------------------------
 
@@ -156,6 +211,13 @@ CREATE TABLE IF NOT EXISTS `rso_events` (
   KEY `RSO_ID` (`RSO_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `rso_events`
+--
+
+INSERT INTO `rso_events` (`RSO_ID`, `Events_ID`) VALUES
+(1, 9);
+
 -- --------------------------------------------------------
 
 --
@@ -166,12 +228,18 @@ DROP TABLE IF EXISTS `super_admin`;
 CREATE TABLE IF NOT EXISTS `super_admin` (
   `UID` int NOT NULL,
   `SuperAdmins_ID` int NOT NULL,
-  `Admins_ID` int DEFAULT NULL,
-  `SuperAdmins_name` text,
   PRIMARY KEY (`SuperAdmins_ID`),
-  UNIQUE KEY `UID` (`UID`),
-  KEY `Admins_ID` (`Admins_ID`)
+  UNIQUE KEY `UID` (`UID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `super_admin`
+--
+
+INSERT INTO `super_admin` (`UID`, `SuperAdmins_ID`) VALUES
+(27, 0),
+(28, 2),
+(31, 1);
 
 -- --------------------------------------------------------
 
@@ -187,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `RSO_ID` int DEFAULT NULL COMMENT 'ID of the RSO this user has joined',
   PRIMARY KEY (`UID`),
   KEY `RSO_ID` (`RSO_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
@@ -196,7 +264,14 @@ CREATE TABLE IF NOT EXISTS `users` (
 INSERT INTO `users` (`UID`, `pass`, `name`, `RSO_ID`) VALUES
 (2, 'password', 'default_user', NULL),
 (3, 'password', 'default_user2', NULL),
-(4, 'password', 'default_user3', NULL);
+(4, 'password', 'default_user3', NULL),
+(27, '123', 'Joshua Bartz', NULL),
+(28, '123', 'Damian Lucarelli', 1),
+(31, '123', 'Evan Wrote', NULL),
+(32, '123', 'Student1', 1),
+(33, '123', 'Student2', 2),
+(34, '123', 'Student3', 3),
+(35, '123', 'Student4', 3);
 
 --
 -- Constraints for dumped tables
@@ -225,23 +300,23 @@ ALTER TABLE `events`
 -- Constraints for table `private_events`
 --
 ALTER TABLE `private_events`
-  ADD CONSTRAINT `priv_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `priv_made_by_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `priv_made_by_sadmin` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `priv_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `priv_made_by_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `priv_made_by_sadmin` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `public_events`
 --
 ALTER TABLE `public_events`
-  ADD CONSTRAINT `pub_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `pub_made_by_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `pub_made_by_sadmin` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `admin_creates_pubE` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `pub_isa_event` FOREIGN KEY (`Events_ID`) REFERENCES `events` (`Events_ID`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `sadmin_creates_pubE` FOREIGN KEY (`SuperAdmins_ID`) REFERENCES `super_admin` (`SuperAdmins_ID`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
 -- Constraints for table `rso`
 --
 ALTER TABLE `rso`
-  ADD CONSTRAINT `RSO_created_by` FOREIGN KEY (`Admin_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `RSO_created_by` FOREIGN KEY (`Admin_ID`) REFERENCES `admin` (`Admins_ID`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `rso_events`
@@ -254,14 +329,14 @@ ALTER TABLE `rso_events`
 -- Constraints for table `super_admin`
 --
 ALTER TABLE `super_admin`
-  ADD CONSTRAINT `sadmin_isa_admin` FOREIGN KEY (`Admins_ID`) REFERENCES `admin` (`Admins_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `sadmin_isa_user` FOREIGN KEY (`UID`) REFERENCES `users` (`UID`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `sadmin_isa_user` FOREIGN KEY (`UID`) REFERENCES `users` (`UID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`RSO_ID`) REFERENCES `rso` (`RSO_ID`) ON DELETE SET NULL ON UPDATE SET NULL;
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
