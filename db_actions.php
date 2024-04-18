@@ -75,7 +75,7 @@ function addEvent($conn){
 
 	$stmt = $conn->prepare("INSERT INTO events (time, Lname, Event_Name, Description) 
 		VALUES (?,?,?,?)");
-	$stmt->bind_param("ssss", $, $time, $lname, $eventName, $description);
+	$stmt->bind_param("ssss", $time, $lname, $eventName, $description);
 	$stmt->execute();
 	$result = $stmt->get_result();
 	if ($result == false) {
