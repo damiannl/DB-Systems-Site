@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 17, 2024 at 11:38 PM
+-- Generation Time: Apr 18, 2024 at 01:51 AM
 -- Server version: 8.2.0
 -- PHP Version: 8.2.13
 
@@ -32,6 +32,8 @@ DROP TABLE IF EXISTS `admin`;
 CREATE TABLE IF NOT EXISTS `admin` (
   `UID` int NOT NULL,
   `Admins_ID` int NOT NULL,
+  `email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `phone` varchar(10) NOT NULL,
   PRIMARY KEY (`UID`,`Admins_ID`),
   KEY `Admins_ID` (`Admins_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -40,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `admin` (
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`UID`, `Admins_ID`) VALUES
-(2, 0),
-(27, 1),
-(28, 2),
-(31, 3);
+INSERT INTO `admin` (`UID`, `Admins_ID`, `email`, `phone`) VALUES
+(2, 0, 'genericEmail@email.com', '6548231970'),
+(27, 1, 'genericEmail2@email.com', '1237845604'),
+(28, 2, 'genericEmail3@email.com', '3201654987'),
+(31, 3, 'genericEmail123@email.com', '1203654987');
 
 -- --------------------------------------------------------
 
@@ -166,11 +168,11 @@ CREATE TABLE IF NOT EXISTS `public_events` (
 --
 
 INSERT INTO `public_events` (`Events_ID`, `Admins_ID`, `SuperAdmins_ID`) VALUES
-(2, 0, 0),
-(3, 0, 0),
-(6, 0, 0),
-(7, 0, 0),
-(8, 0, 0);
+(2, 1, 0),
+(3, 1, 0),
+(6, 1, 0),
+(7, 1, 0),
+(8, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -193,8 +195,8 @@ CREATE TABLE IF NOT EXISTS `rso` (
 
 INSERT INTO `rso` (`RSO_ID`, `RSO_name`, `Admin_ID`) VALUES
 (1, 'Society of Generic Students', 1),
-(2, 'Society of Superb Students', 2),
-(3, 'Society of Special Students', 3),
+(2, 'Society of Superb Students', 1),
+(3, 'Society of Special Students', 1),
 (4, 'Inserted RSO', 1);
 
 -- --------------------------------------------------------
