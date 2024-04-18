@@ -94,6 +94,93 @@ function doLogin() {
   }
 }
 
+function displayEvents() {
+  let userId = -1;
+  let data = document.cookie;
+  let splits = data.split(",");
+  for (var i = 0; i < splits.length; i++) {
+    let thisOne = splits[i].trim();
+    let tokens = thisOne.split("=");
+    if (tokens[0] === "userId") {
+      userId = parseInt(tokens[1].trim());
+    }
+  }
+
+  console.log(userId);
+  let url = urlBase + "?action=viewEvents&userId=" + userId;
+
+
+  let xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4 && this.status === 200) {
+      //console.log(xhr.responseText);
+      let events = JSON.parse(xhr.responseText);
+      let tableBody = document.getElementById("contactTableBody");
+      tableBody.innerHTML = ""; // Clear existing data
+
+      for (let i = 0; i < events.length; i++) {
+        let event = events[i];
+        let row = document.createElement("tr");
+        console.log(event);
+        let columns = [
+          "Event_Name",
+          "Category",
+          "Description",
+          "Time",
+          "Location",
+          "Phone",
+          "Email",
+          "actions",
+        ]; // Add actions column
+
+        for (let j = 0; j < columns.length; j++) {
+          let column = columns[j];
+          let cell = document.createElement("td");
+          //console.log(column);
+          if (column === "actions") {
+            // Create edit and delete buttons
+            let editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.addEventListener("click", function () {
+              editContact(event);
+            });
+
+            cell.appendChild(editButton);
+          } else if(column === "Event_Name") {
+            cell.textContent = event[3];
+            //console.log(event[column])
+          }else if(column === "Category") {
+            cell.textContent = event[0];
+            //console.log(event[column])
+          }else if(column === "Description") {
+            cell.textContent = event[4];
+            //console.log(event[column])
+          }else if(column === "Time") {
+            cell.textContent = event[1];
+            //console.log(event[column])
+          }else if(column === "Location") {
+            cell.textContent = event[2];
+            //console.log(event[column])
+          }else if(column === "Phone") {
+            cell.textContent = event[0];
+            //console.log(event[column])
+          }else if(column === "Email") {
+            cell.textContent = event[0];
+            //console.log(event[column])
+          }
+
+          row.appendChild(cell);
+        }
+
+        tableBody.appendChild(row);
+      }
+    }
+  };
+  xhr.send();
+}
+
 function doLogOut() {
   userId = 0;
   email = "";
