@@ -203,7 +203,7 @@ function viewEvents($conn) {
 		$stmt->execute();
 		$rso_id_result = $stmt->get_result();
 		$rsoarray = mysqli_fetch_all($rso_id_result, MYSQLI_NUM);
-		$rso_id = $rsoarray[0][0];
+		$rso_id = $rsoarray[0];
 		
 		//Fetch RSO events they can see
 		$sql = "SELECT * FROM events E WHERE E.Events_ID IN 
