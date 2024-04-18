@@ -86,18 +86,35 @@ function addEvent($conn){
 }
 
 function viewUsers($conn) {
-	$sql = "SELECT UID,name FROM users";
-	$result = mysqli_query($conn,$sql);
-	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);
-	return(json_encode($array));
+	$rso_id = $_GET['RSO_ID'];
+	$sql = "SELECT UID,name FROM users WHERE RSO_ID = ?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $rso_id);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$users = mysqli_fetch_all($result,MYSQLI_ASSOC);
+
+	return(json_encode($users));
+
+	// $tableRow = "";
+	// $array = array();
+	// foreach ($users as $user) {
+	// 	$tableRow = "<tr><td>".$user['name']."</td><td>User</td>";
+	// 	$array[$x] = array('row' => $tableRow, 'id' => $row['UID']);
+	// }
+	// return(json_encode($array));
 }
 
 function viewAdmins($conn) {
-	$sql = "SELECT U.UID, A.Admins_ID FROM users U,admin A WHERE U.UID=A.UID";
-	$result = mysqli_query($conn,$sql);
-	$array = mysqli_fetch_all($result,MYSQLI_ASSOC);
-	return(json_encode($array));
-}
+	$rso_id = $_GET['RSO_ID'];
+	$sql = "SELECT U.UID, U.RSO_ID, A.Admins_ID FROM users U,admin A WHERE U.UID=A.UID AND U.RSO_ID = ?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $rso_id);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$admins = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+	return(json_encode($admins));
 
 //Function that takes a user ID and a password and checks if there's a user that matches those credentials
 function verifyLogin($conn) {
