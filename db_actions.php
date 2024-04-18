@@ -116,6 +116,8 @@ function viewAdmins($conn) {
 
 	return(json_encode($admins));
 
+}
+
 //Function that takes a user ID and a password and checks if there's a user that matches those credentials
 function verifyLogin($conn) {
 	//unpack received json data
