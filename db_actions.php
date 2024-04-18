@@ -62,6 +62,15 @@ function addUser($conn) {
 	return (json_encode($arr));
 }
 
+function addEvent($conn, $time, $lname, $eventName, $description){
+	$stmt = $conn->prepare("INSERT INTO events (time, Lname, Event_Name, Description) 
+		VALUES (?,?,?,?)");
+	$stmt->bind_param("ssss", $, $time, $lname, $eventName, $description);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	return ($result);
+}
+
 function viewUsers($conn) {
 	$sql = "SELECT UID,name FROM users";
 	$result = mysqli_query($conn,$sql);
@@ -105,7 +114,10 @@ function verifyLogin($conn) {
 
 //Function that determines if a user is an admin or not from a user ID
 function isAdmin($conn) {
-	$uid = $_GET['id'];
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$uid = $json_obj['id'];
 
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
@@ -123,7 +135,11 @@ function isAdmin($conn) {
 
 //Returns an array containing the data of an event given an event ID
 function getEvent($conn) {
-	$Events_ID = $_GET['events_ID'];
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$Events_ID = $json_obj['events_ID'];
+
 
 	$sql = "SELECT * FROM events WHERE Events_ID=?";
 	$stmt = $conn->prepare($sql);
@@ -143,7 +159,10 @@ function getEvent($conn) {
 
 //Get a list of events hosted by an RSO from a given RSO ID
 function getRSOEvents($conn) {
-	$RSO_ID = $_GET['rso_ID'];
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$RSO_ID = $json_obj['rso_ID'];
 	
 	$sql = "SELECT * FROM events E, rso_events R WHERE E.Events_ID=R.Events_ID AND R.RSO_ID=?";
 	$stmt = $conn->prepare($sql);
@@ -160,8 +179,8 @@ function getRSOEvents($conn) {
 }
 
 //Return a list of all events a user can see
-function viewEvents($conn) {
-	$UID = $_GET['UID'];
+function viewEvents($conn, $uid) {
+	//get uid
 	//If user is an admin, they can see all events
 	if (isAdmin($conn, $uid) == true) {
 		$sql = "SELECT * FROM events";
@@ -172,22 +191,36 @@ function viewEvents($conn) {
 	//Else user can see public events, private events from university, and RSO events for which
 	//RSO they are a part of 
 	else {
+		//Gather RSO here
+		$sql = "SELECT U.RSO_ID FROM users U WHERE U.UID = ?";
+		$stmt = $conn->prepare($sql);
+		$stmt->bind_param("s", $RSO_ID);
+		$stmt->execute();
+		$rso_id = $stmt->get_result();
+		
 		//Fetch RSO events they can see
-		$sql = "SELECT * FROM events E, rso_events R, users U WHERE E.Events_ID = R.Events_ID AND 
-				R.RSO_ID = U.RSO_ID";
-		$result = mysqli_query($conn, $sql);
+		$sql = "SELECT * FROM events E WHERE E.Events_ID IN 
+			(SELECT E1.Events_ID FROM events E1, rso_events R WHERE R.Events_ID = E1.Events_ID AND R.RSO_ID = ?);";
+		$stmt = $conn->prepare($sql);
+		$stmt->bind_param("s", $rso_id);
+		$stmt->execute();
+		$result = $stmt->get_result();
 		$array = mysqli_fetch_all($result, MYSQLI_NUM);
+		
 		//Fetch public events (everyone can see)
-		$sql = "SELECT * FROM events E, public_events P WHERE E.Events_ID=P.Events_ID";
-		$result = mysqli_query($conn, $sql);
-		$array2 = mysqli_fetch_all($result, MYSQLI_NUM);
+		$sql = "SELECT * FROM events E WHERE E.Events_ID IN
+			(SELECT E1.Events_ID FROM events E1, public_events P WHERE E1.Events_ID = P.Events_ID);";
+		$result2 = mysqli_query($conn, $sql);
+		$array2 = mysqli_fetch_all($result2, MYSQLI_NUM);
 		$result_arr = array_merge($array, $array2);
+		
 		//Fetch private events for university (still everyone can see bc there is no implementation for
 		//events of other universities yet)
-		$sql = "SELECT * FROM events E, private_events P WHERE E.Events_ID=P.Events_ID";
-		$result = mysqli_query($conn, $sql);
-		$array2 = mysqli_fetch_all($result, MYSQLI_NUM);
-		$result_arr = array_merge($array, $array2);
+		$sql = "SELECT * FROM events E WHERE E.Events_ID IN
+			(SELECT E1.Events_ID FROM events E1, private_events P WHERE E1.Events_ID = P.Events_ID);";
+		$result3 = mysqli_query($conn, $sql);
+		$array3 = mysqli_fetch_all($result, MYSQLI_NUM);
+		$result_arr = array_merge($result_arr, $array3);
 		return json_encode($result_arr);
 	}
 }
