@@ -17,8 +17,9 @@
     <?php include "db_actions.php"; displayEvents(); ?>
     <div id="headerBar">
         <div class="navBar">
-            <a onclick="showAddEventForm()">Add Event</a>
-            <a onclick="displayEvents()">Show Events</a>
+            <a onclick="showAddEventForm()">Add RSO</a>
+            <a onclick="displayEvents()">Edit RSO</a>
+            <a href="./events.html">Return to Events</a>
             <a href="./" onclick="doLogOut()">Log Out</a>
         </div>
         <h3 id="welcomeMessage"></h3>
@@ -42,11 +43,10 @@
                         <th>Delete</th>
                     </tr>
                 </thead>
-                <tbody id="contactTableBody">
-                    <!-- Add an ID to the table body for dynamically adding members -->
-                    <!-- members will be dynamically added here -->
-                </tbody>
+                <tbody id="memberTableBody"></tbody>
             </table>
+            <!-- get data for table rows-->
+            <script> getMembers(); </script>
         </div>
     </div>
 

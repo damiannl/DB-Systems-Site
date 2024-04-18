@@ -104,6 +104,7 @@ function addUser($conn, $password, $name) {
 	$result = $stmt->get_result();
 	$userid = mysqli_fetch_row($result);
 	//printf("User ID of newly created user = %d", $userid[0]);
+<<<<<<< Updated upstream
 	return($userid[0]);
 }
 
@@ -127,6 +128,73 @@ function viewAdmins($conn) {
 	  printf("UID: %d,", $row[$x]["UID"]);
 	  printf("Admins_ID: %d\n", $row[$x]["Admins_ID"]);
 	  }
+=======
+
+	//Return the user ID of the newly created user in JSON format
+	$arr = array('id' => $userid[0], 'email' => $email);
+	return (json_encode($arr));
+}
+
+function addEvent($conn){
+	//unpack received json data
+	$json = file_get_contents('php://input');
+	$json_obj = json_decode($json, true);
+	$time = $json_obj['time'];
+	$lname = $json_obj['lname'];
+	$eventName = $json_obj['eventName'];
+	$description = $json_obj['description'];
+
+	$stmt = $conn->prepare("INSERT INTO events (time, Lname, Event_Name, Description) 
+		VALUES (?,?,?,?)");
+	$stmt->bind_param("ssss", $time, $lname, $eventName, $description);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	if ($result == false) {
+		http_response_code(400);
+		return "";
+	}
+	return (json_encode($result));
+}
+
+function viewUsers($conn) {
+	$rso_id = $_GET['RSO_ID'];
+	$sql = "SELECT UID,name FROM users WHERE RSO_ID = ?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $rso_id);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$users = mysqli_fetch_all($result,MYSQLI_ASSOC);
+
+	return(json_encode($users));
+
+	// $tableRow = "";
+	// $array = array();
+	// foreach ($users as $user) {
+	// 	$tableRow = "<tr><td>".$user['name']."</td><td>User</td>";
+	// 	$array[$x] = array('row' => $tableRow, 'id' => $row['UID']);
+	// }
+	// return(json_encode($array));
+}
+
+function viewAdmins($conn) {
+	$rso_id = $_GET['RSO_ID'];
+	$sql = "SELECT U.UID, U.RSO_ID, A.Admins_ID FROM users U,admin A WHERE U.UID=A.UID AND U.RSO_ID = ?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $rso_id);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$admins = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+	return(json_encode($admins));
+
+	// $tableRow = "";
+	// $array = array();
+	// foreach ($admins as $admin) {
+	// 	$tableRow = "<tr><td>".$admin['Admins_name']."</td><td>".$admin['Admins_ID']."</td>";
+	// 	$array[] = array('row' => $tableRow, 'id' => $admin['UID']);
+	// }
+	// return(json_encode($array));
+>>>>>>> Stashed changes
 }
 
 //Function that takes a user ID and a password and checks if there's a user that matches those credentials
@@ -139,11 +207,28 @@ function verifyLogin($conn, $uid, $pass) {
 	//Fetch all ***shouldnt*** be problematic here, since user IDs are unique only 1 entry should be in the array
 	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
 	//printf("result is: %s", $array[0]["name"]);
+<<<<<<< Updated upstream
 	return $array;
 }
 
 //Function that determines if a user is an admin or not from a user ID
 function isAdmin($conn, $uid) {
+=======
+	//If the array is empty, then the user does not exist
+	if($array == null) {
+		$arr = array('id' => 0);
+		return (json_encode($arr));
+	} else {
+		$arr = array('id' => $array[0]["UID"], 'rso_id' => $array[0]["RSO_ID"]);
+		return (json_encode($arr));
+	}
+}
+
+//Function that determines if a user is an admin or not from a user ID
+function isAdmin($conn) {
+	$uid = $_GET['userID'];
+
+>>>>>>> Stashed changes
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("s", $uid);
@@ -151,10 +236,8 @@ function isAdmin($conn, $uid) {
 	$result = $stmt->get_result();
 	$array = mysqli_fetch_all($result, MYSQLI_NUM);
 	if($array==null) {
-		echo("false");
 		return false;
 	}
-	echo("true");
 	return true;
 }
 
@@ -170,10 +253,16 @@ function getEvent($conn, $Events_ID) {
 }
 
 //Get a list of events hosted by an RSO from a given RSO ID
+<<<<<<< Updated upstream
 function getRSOEvents($conn, $RSO_ID) {
+=======
+function getRSOEvents($conn) {
+	$rso_id = $_GET['RSO_ID'];
+	
+>>>>>>> Stashed changes
 	$sql = "SELECT * FROM events E, rso_events R WHERE E.Events_ID=R.Events_ID AND R.RSO_ID=?";
 	$stmt = $conn->prepare($sql);
-	$stmt->bind_param("s", $RSO_ID);
+	$stmt->bind_param("s", $rso_id);
 	$stmt->execute();
 	$result = $stmt->get_result();
 	$array = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -181,7 +270,12 @@ function getRSOEvents($conn, $RSO_ID) {
 }
 
 //Return a list of all events a user can see
+<<<<<<< Updated upstream
 function viewEvents($conn, $uid) {
+=======
+function viewEvents($conn) {
+	$uid = $_GET['userID'];
+>>>>>>> Stashed changes
 	//If user is an admin, they can see all events
 	if (isAdmin($conn, $uid) == true) {
 		$sql = "SELECT * FROM events";
@@ -192,6 +286,16 @@ function viewEvents($conn, $uid) {
 	//Else user can see public events, private events from university, and RSO events for which
 	//RSO they are a part of 
 	else {
+<<<<<<< Updated upstream
+=======
+		//Gather RSO here
+		$sql = "SELECT U.RSO_ID FROM users U WHERE U.UID = ?";
+		$stmt = $conn->prepare($sql);
+		$stmt->bind_param("s", $rso_id);
+		$stmt->execute();
+		$rso_id = $stmt->get_result();
+		
+>>>>>>> Stashed changes
 		//Fetch RSO events they can see
 		$sql = "SELECT * FROM events E, rso_events R, users U WHERE E.Events_ID = R.Events_ID AND 
 				R.RSO_ID = U.RSO_ID";

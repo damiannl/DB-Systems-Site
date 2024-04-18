@@ -2,6 +2,7 @@ const urlBase = "/db_actions.php"; // put the base url here, i deleted my old on
 const extension = "php";
 
 let userId = 0;
+let rso_id = 0;
 let firstName = "";
 let lastName = "";
 let contactIdGlobal = 0;
@@ -56,6 +57,7 @@ function doRegister() {
 
 function doLogin() {
   userId = 0;
+  rso_id = 0;
   firstName = "";
   lastName = "";
 
@@ -81,6 +83,7 @@ function doLogin() {
         console.log(jsonObject);
         
         userId = jsonObject.id;
+        rso_id = jsonObject.rso_id;
 
         if (userId < 1) {
           document.getElementById("loginResult").innerHTML =
@@ -114,7 +117,12 @@ function saveCookie() {
   let date = new Date();
   date.setTime(date.getTime() + minutes * 60 * 1000);
   console.log(userId);
+<<<<<<< Updated upstream
   console.log(firstName);
+=======
+  console.log(rso_id);
+  console.log(tempemail);
+>>>>>>> Stashed changes
   document.cookie =
     "firstName=" +
     firstName +
@@ -122,6 +130,8 @@ function saveCookie() {
     lastName +
     ",userId=" +
     userId +
+    ",rso_id=" +
+    rso_id +
     ";expires=" +
     date.toGMTString();
 }
@@ -144,6 +154,8 @@ function readCookie() {
       lastName = tokens[1];
     } else if (tokens[0] === "userId") {
       userId = parseInt(tokens[1].trim());
+    } else if (tokens[0] === "rso_id") {
+      rso_id = parseInt(tokens[1].trim());
     }
   }
 
@@ -447,4 +459,49 @@ function searchContacts() {
     }
   };
   xhr.send();
+}
+
+function getMembers() {
+  //set up HTML reference
+  rso_id = 1;
+  let ref = document.querySelector("memberTableBody")
+  let data = "";
+
+  //get members
+  let xhr = new XMLHttpRequest();
+  xhr.open(
+    "GET",
+    `${urlBase}?action=viewUsers&RSO_ID=${rso_id}`,
+    true
+  );
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4 && this.status === 200) {
+      let members = JSON.parse(xhr.responseText);
+
+      //data = <tr><td>members.</td></tr>
+
+      for (let i = 0; i < members.length; i++) {
+        console.log(members[i]);
+
+      }
+    }
+  }
+  xhr.send(); // Send the request
+
+  //get admins
+  xhr = new XMLHttpRequest();
+  xhr.open("GET", `${urlBase}?action=viewAdmins&RSO_ID=${rso_id}`, true);
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4 && this.status === 200) {
+      let admins = JSON.parse(xhr.responseText);
+
+      for (let i = 0; i < admins.length; i++) {
+        console.log(admins[i]);
+
+      }
+    }
+  }
+  xhr.send(); // Send the request
+
+  ref.innerHTML = data;
 }
