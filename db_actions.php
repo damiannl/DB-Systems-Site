@@ -128,7 +128,7 @@ function verifyLogin($conn) {
 
 //Function that determines if a user is an admin or not from a user ID
 function isAdmin($conn) {
-	$UID = $_GET['UID'];
+	$uid = $_GET['UID'];
 
 	$sql = "SELECT * FROM users U, admin A WHERE U.UID = ? AND U.UID = A.UID";
 	$stmt = $conn->prepare($sql);
@@ -137,10 +137,10 @@ function isAdmin($conn) {
 	$result = $stmt->get_result();
 	$array = mysqli_fetch_all($result, MYSQLI_NUM);
 	if($array==null) {
-		echo("false");
+		//echo("false");
 		return false;
 	}
-	echo("true");
+	//echo("true");
 	return true;
 }
 
@@ -229,5 +229,59 @@ function viewEvents($conn) {
 		$result_arr = array_merge($result_arr, $array3);
 		return json_encode($result_arr);
 	}
+}
+	
+function getAdminDataFromEvent($conn) {
+	//$event_id = ;
+	$sql = "SELECT A.email, A.phone FROM admin A WHERE A.Admins_ID IN 
+		(SELECT A1.Admins_ID FROM admin A1, public_events P WHERE P.Events_ID = ? AND P.Admins_ID = A1.Admins_ID)";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $event_id);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
+	
+	$sql = "SELECT A.email, A.phone FROM admin A WHERE A.Admins_ID IN 
+		(SELECT A1.Admins_ID FROM admin A1, private_events P WHERE P.Events_ID = ? AND P.Admins_ID = A1.Admins_ID)";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $event_id);
+	$stmt->execute();
+	$result2 = $stmt->get_result();
+	$arr2 = mysqli_fetch_all($result2, MYSQLI_ASSOC);
+	$arr = array_merge($arr, $arr2);
+	
+	$sql = "SELECT A.email, A.phone FROM admin A WHERE A.Admins_ID IN 
+		(SELECT A1.Admins_ID FROM admin A1, rso_events R WHERE R.Events_ID = 2 AND R.RSO_ID = 
+			(SELECT R1.RSO_ID FROM rso RSO, rso_events R1 WHERE RSO.Admin_ID = A1.Admins_ID AND R1.RSO_ID = RSO.RSO_ID));";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("s", $event_id);
+	$stmt->execute();
+	$result3 = $stmt->get_result();
+	$arr3 = mysqli_fetch_all($result3, MYSQLI_ASSOC);
+	$arr = array_merge($arr, $arr3);
+	return $arr;
+}
+
+function addUserToRSO($conn) {
+	//$rso_id = 
+	//$userid = 
+	
+	$sql = "UPDATE users SET RSO_ID=? WHERE UID = ?";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("ss", $rso_id, $userid);
+	$stmt->execute();
+}
+
+function viewComments($conn) {
+	//$userid = 
+	//$event_id = 
+	
+	$sql = "SELECT * FROM comments C WHERE C.Events_ID = ? AND C.UID = ?;";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("ss", $event_id, $userid);
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
+	return $arr;
 }
 ?>
