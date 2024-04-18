@@ -524,3 +524,48 @@ function searchContacts() {
   };
   xhr.send();
 }
+
+function getMembers() {
+  //set up HTML reference
+  rso_id = 1;
+  let ref = document.querySelector("memberTableBody")
+  let data = "";
+
+  //get members
+  let xhr = new XMLHttpRequest();
+  xhr.open(
+    "GET",
+    `${urlBase}?action=viewUsers&RSO_ID=${rso_id}`,
+    true
+  );
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4 && this.status === 200) {
+      let members = JSON.parse(xhr.responseText);
+
+      //data = <tr><td>members.</td></tr>
+
+      for (let i = 0; i < members.length; i++) {
+        console.log(members[i]);
+
+      }
+    }
+  }
+  xhr.send(); // Send the request
+
+  //get admins
+  xhr = new XMLHttpRequest();
+  xhr.open("GET", `${urlBase}?action=viewAdmins&RSO_ID=${rso_id}`, true);
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4 && this.status === 200) {
+      let admins = JSON.parse(xhr.responseText);
+
+      for (let i = 0; i < admins.length; i++) {
+        console.log(admins[i]);
+
+      }
+    }
+  }
+  xhr.send(); // Send the request
+
+  ref.innerHTML = data;
+}
