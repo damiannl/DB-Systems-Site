@@ -202,7 +202,7 @@ function viewEvents($conn) {
 		$stmt->bind_param("s", $RSO_ID);
 		$stmt->execute();
 		$rso_id_result = $stmt->get_result();
-		$rsoarray = mysqli_fetch_all($result, MYSQLI_NUM);
+		$rsoarray = mysqli_fetch_all($rso_id_result, MYSQLI_NUM);
 		$rso_id = $rsoarray[0][0];
 		
 		//Fetch RSO events they can see
